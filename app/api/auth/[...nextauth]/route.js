@@ -20,32 +20,37 @@ export const authoptions = NextAuth({
   ],
 callbacks: {
   async signIn({ user, account, profile, email, credentials }) {
-     if(account.provider=="github"){
-      await connectDb();
-
-      const currUser=await User.findOne({email:email});
+     try {
+      if(account.provider=="github"){
+        await connectDb();
   
-      if(!currUser){
-        const newUser= await User.create({
-          email:user.email,
-          username:user.email.split('@')[0]
-        })
-      } 
-     return true;
-    }
-    if(account.provider=="google"){
-      await connectDb();
-      
-      const currentUser=await User.findOne({email:email});
-
-      if(!currentUser){
-        const newUser=await User.create({
-          email:user.email,
-          username:user.email.split('@')[0]
-        })  
+        const currUser=await User.findOne({email:email});
+    
+        if(!currUser){
+          const newUser= await User.create({
+            email:user.email,
+            username:user.email.split('@')[0]
+          })
+        } 
+       return true;
       }
-      return true;
-    }
+      if(account.provider=="google"){
+        await connectDb();
+        
+        const currentUser=await User.findOne({email:email});
+  
+        if(!currentUser){
+          const newUser=await User.create({
+            email:user.email,
+            username:user.email.split('@')[0]
+          })  
+        }
+        return true;
+      }
+     } catch (error) {
+      console.error("Sign-in error:", error);
+      return false; // Prevents NextAuth from hanging
+     }
   },
 
   async session({ session, token, user }) {
