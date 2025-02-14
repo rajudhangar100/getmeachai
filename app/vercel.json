@@ -1,0 +1,8 @@
+{
+    "functions": {
+      "/api/auth/*": {
+        "timeout": 30
+      }
+    }
+  }
+  
