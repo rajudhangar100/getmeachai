@@ -29,9 +29,10 @@ export const POST = async (req) => {
         return NextResponse.redirect(`${process.env.NEXT_PUBLIC_URL}/${updatedPayment.to_user}?payment=true`)
     }
     else{
-        NextResponse.json({success:false,message:"Payment Verification Failed"})
+        return NextResponse.json({success:false,message:"Payment Verification Failed"})
     }
    } catch (error) {
      console.error("Error from route/razorpay: ",error);
+     return NextResponse.json({ success: false, message: "Internal Server Error", error: error.message });
    }
 }

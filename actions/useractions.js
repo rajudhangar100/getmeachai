@@ -43,6 +43,9 @@ export const fetchUser = async (username) => {
   await connectDb();
   let u = await User.findOne({ username: username });
   //It converts a MongoDB document (u) into a plain JavaScript object (toObject()).
+  if (!u) {
+    return res.status(404).json({ error: "Document not found" });
+  }
   u = u.toObject({ flattenObjectIds: true });
   return u;
 };
