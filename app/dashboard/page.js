@@ -25,7 +25,6 @@ const Dashboard = () => {
         router.push("/login");
       }else{
         getData(); 
-        console.log("run hua");
       }
     }, [session,router])
     

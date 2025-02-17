@@ -9,7 +9,6 @@ export const POST = async (req) => {
    try {
     await connectDb()
     let body=await req.formData()
-    console.log("request body: ",req);
     body=Object.fromEntries(body)
 
     let p=await Payment.findOne({order_id:body.razorpay_order_id})
@@ -27,7 +26,7 @@ export const POST = async (req) => {
     
     if(xx){
         const updatedPayment=await Payment.findOneAndUpdate({order_id:body.razorpay_order_id},{done:true},{new:true})
-        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_URL}/${updatedPayment.to_user}?paymentdone=true`)
+        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_URL}/${updatedPayment.to_user}?payment=true`)
     }
     else{
         NextResponse.json({success:false,message:"Payment Verification Failed"})

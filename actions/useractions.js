@@ -7,20 +7,16 @@ import connectDb from "@/db/connectDb";
 //orderId initiate karna hai
 export const initiate = async (amount, to_username, paymentform) => {
   await connectDb();
-  console.log("initiate start hua");
 
   try {
     //fetch the secret of the user who is getting paid
     let user = await User.findOne({ username: to_username });
-    console.log("user mila database se");
-    const secret = user.razorpaysecret;
+    const secret = process.env.KEY_SECRET;
 
     var instance = new Razorpay({
-      key_id: user.razorpayid,
+      key_id: process.env.NEXT_PUBLIC_KEY_ID,
       key_secret: secret,
     });
-
-    console.log("KEY secret ", instance.key_secret);
 
     let options = {
       amount: Number.parseInt(amount),
@@ -28,7 +24,6 @@ export const initiate = async (amount, to_username, paymentform) => {
     };
 
     let x = await instance.orders.create(options);
-    console.log("order create hua");
     // # fBQ8pbNxklXSUSEpn4Ccd
     //Create a payment object which shows pending payment in db
     await Payment.create({
@@ -71,7 +66,6 @@ export const fetchPayment = async (username) => {
 export const updateUser = async (data, oldusername) => {
   await connectDb();
   let ndata = Object.fromEntries(data);
-  console.log("new data: ",ndata);
   if (ndata.username !== oldusername) {
     let u = await User.findOne({ username: ndata.username });
     if (u) {

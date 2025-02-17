@@ -12,27 +12,28 @@
 
 
   const Paymentpage =  ({username}) => {
-      const {data:session}=useSession();
+      const { data : session }=useSession();
       const  [paymentform, setPaymentform] = useState({name:"",message:"",amount:""});
       const [currUser,setcurrUser]=useState({});
       const [payment,setPayment]=useState([]);
       const searchParams=useSearchParams();
       const router=useRouter();
-      if(!session){
-        router.push("/");
+
+      const getData= async ()=>{
+        let u=await fetchUser(username);
+        setcurrUser(u);
+        let pay=await fetchPayment(username);
+        setPayment(pay);
       }
+  
       const handleChange=(e)=>{
           const {name,value}=e.target;
           setPaymentform({...paymentform,[name]:value})
       }
-
-      useEffect( () => {
-        try{
-          getData();
-        }catch(error){
-          console.error("Get data mai error: ",error);
-        }
-      }, [session,router])
+//while working with router and (changing the state) do it in useEFfect because initial rendering router update nhi hota hai
+      useEffect(() => {
+        getData()
+      },[session,router])
 
       useEffect(() => {
         if(searchParams.get("paymentdone")==="true"){
@@ -49,22 +50,12 @@
             });  
             router.push(`/${username}`)
         }
-      })
-      
-        
-      const getData= async ()=>{
-        let u=await fetchUser(username);
-        setcurrUser(u);
-        let pay=await fetchPayment(username);
-        setPayment(pay);
-      }
+      },[router])
       
       const pay=async (amount)=>{
-        console.log(amount);
           try {
             //Get order id from server action
             let x=await initiate(amount,username,paymentform);
-            console.log("x ki value: ",x);
             let orderId=x.id;
             var options={
                 "key": process.env.NEXT_PUBLIC_KEY_ID, // Enter the Key ID generated from the Dashboard
